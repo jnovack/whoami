@@ -30,9 +30,9 @@ var upgrader = websocket.Upgrader{
 func main() {
 	// defer profile.Start().Stop()
 	flag.Parse()
-	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/", whoami)
 	http.HandleFunc("/api", api)
+	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/health", healthHandler)
 	fmt.Println("Starting up on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
