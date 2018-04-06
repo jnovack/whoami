@@ -1,10 +1,10 @@
 # whoami
 
-Tiny Go webserver that prints os information and HTTP request to output
+Tiny Go webserver that print HTTP request to output.
 
 ```sh
-$ docker run -d -P --name iamfoo emilevauge/whoami
-$ docker inspect --format '{{ .NetworkSettings.Ports }}'  iamfoo
+$ docker run -d -P --name iamfoo jnovack/whoami
+$ docker inspect --format '{{ .NetworkSettings.Ports }}' iamfoo
 map[80/tcp:[{0.0.0.0 32769}]]
 $ curl "http://0.0.0.0:32769"
 Hostname :  6e0030e67d6a
@@ -17,3 +17,5 @@ Host: 0.0.0.0:32769
 User-Agent: curl/7.35.0
 Accept: */*
 ```
+
+Forked from emilevauge/whoami.
