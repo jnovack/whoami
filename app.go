@@ -92,7 +92,10 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 			case *net.IPAddr:
 				ip = v.IP
 			}
-			fmt.Fprintln(w, "IP:", ip)
+			// No need to EVER print localhost, we know
+			if ip.String() != "127.0.0.1" {
+				fmt.Fprintln(w, "IP:", ip)
+			}
 		}
 	}
 	req.Write(w)
@@ -122,7 +125,10 @@ func api(w http.ResponseWriter, req *http.Request) {
 			case *net.IPAddr:
 				ip = v.IP
 			}
-			data.IP = append(data.IP, ip.String())
+			// No need to EVER print localhost, we know
+			if ip.String() != "127.0.0.1" {
+				data.IP = append(data.IP, ip.String())
+			}
 		}
 	}
 	json.NewEncoder(w).Encode(data)
