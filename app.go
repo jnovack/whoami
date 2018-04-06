@@ -142,7 +142,7 @@ type healthState struct {
 	StatusCode int
 }
 
-var currentHealthState = healthState{200}
+var currentHealthState = healthState{204}
 var mutexHealthState = &sync.RWMutex{}
 
 func healthHandler(w http.ResponseWriter, req *http.Request) {
