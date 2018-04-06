@@ -98,6 +98,12 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
+
+	environ := os.Environ()
+	for _, env := range environ {
+		fmt.Fprintln(w, "ENV:", env)
+ 	}
+
 	req.Write(w)
 }
 
