@@ -4,6 +4,8 @@ ADD . /go/src
 WORKDIR /go/src
 RUN go get -d
 RUN CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o whoami
+
+# Copy binary to single-serve container
 FROM scratch
 COPY --from=0 /go/src/whoami /
 ENTRYPOINT ["/whoami"]
