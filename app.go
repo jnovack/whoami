@@ -68,6 +68,7 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 func whoami(w http.ResponseWriter, req *http.Request) {
 	u, _ := url.Parse(req.URL.String())
 	queryParams := u.Query()
+
 	wait := queryParams.Get("wait")
 	if len(wait) > 0 {
 		duration, err := time.ParseDuration(wait)
@@ -75,8 +76,10 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 			time.Sleep(duration)
 		}
 	}
+
 	hostname, _ := os.Hostname()
 	fmt.Fprintln(w, "Hostname:", hostname)
+
 	ifaces, _ := net.Interfaces()
 	for _, i := range ifaces {
 		addrs, _ := i.Addrs()
