@@ -17,7 +17,14 @@ import (
 	"time"
 )
 
-var port string
+
+var (
+	port string
+	version  string
+	commit  string
+	buildDate string
+	buildTime string
+)
 
 func init() {
 	flag.StringVar(&port, "port", "80", "give me a port number")
@@ -29,6 +36,9 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
+	fmt.Printf("jnovack/whoami %s\n", version)
+	fmt.Printf(" :: commit %s built on %s at %s ::\n", commit, buildDate, buildTime)
+
 	// defer profile.Start().Stop()
 	flag.Parse()
 	http.HandleFunc("/", whoami)
@@ -36,7 +46,7 @@ func main() {
 	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/health", healthHandler)
 	http.Handle("/metrics", promhttp.Handler())
-	fmt.Println("Starting up on port " + port)
+	fmt.Println(" - listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
@@ -105,6 +115,12 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 	for _, env := range environ {
 		fmt.Fprintln(w, "ENV:", env)
  	}
+
+	fmt.Fprintln(w, "VERSION:", version)
+	fmt.Fprintln(w, "COMMIT:", commit)
+	fmt.Fprintln(w, "BUILD_DATE:", buildDate)
+	fmt.Fprintln(w, "BUILD_TIME:", buildTime)
+
 
 	req.Write(w)
 }

@@ -3,19 +3,23 @@
 Tiny Go webserver that print HTTP request to output.
 
 ```sh
-$ docker run -d -P --name iamfoo jnovack/whoami
-$ docker inspect --format '{{ .NetworkSettings.Ports }}' iamfoo
-map[80/tcp:[{0.0.0.0 32769}]]
-$ curl "http://0.0.0.0:32769"
-Hostname :  6e0030e67d6a
-IP :  127.0.0.1
-IP :  ::1
-IP :  172.17.0.27
-IP :  fe80::42:acff:fe11:1b
+$ docker run -d -P --name whoami jnovack/whoami
+$  docker port whoami
+80/tcp -> 0.0.0.0:32769
+$ curl http://0.0.0.0:32769
+Hostname: 49e9ee794830
+IP: 192.168.203.6
+ENV: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV: HOSTNAME=49e9ee794830
+ENV: HOME=/
+VERSION: v1.2.0
+COMMIT: 4ded474
+BUILD_DATE: 2018-04-06
+BUILD_TIME: 20:46:43-0400
 GET / HTTP/1.1
-Host: 0.0.0.0:32769
-User-Agent: curl/7.35.0
+Host: localhost:32769
+User-Agent: curl/7.54.0
 Accept: */*
 ```
 
-Forked from emilevauge/whoami.
+Forked from [emilevauge/whoami](https://github.com/emilevauge/whoamI).
