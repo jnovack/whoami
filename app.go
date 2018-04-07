@@ -121,24 +121,38 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "BUILD_DATE:", buildDate)
 	fmt.Fprintln(w, "BUILD_TIME:", buildTime)
 
-
 	req.Write(w)
 }
 
 func api(w http.ResponseWriter, req *http.Request) {
 	hostname, _ := os.Hostname()
+	type Build struct {
+		Version      string     `json:"version,omitempty"`
+		Commit       string     `json:"commit,omitempty"`
+		BuildDate    string     `json:"build_date,omitempty"`
+		BuildTime    string     `json:"build_time,omitempty"`
+	}
 	data := struct {
-		Hostname string      `json:"hostname,omitempty"`
-		IP       []string    `json:"ip,omitempty"`
-		Headers  http.Header `json:"headers,omitempty"`
-		URL      string      `json:"url,omitempty"`
-		Method   string      `json:"method,omitempty"`
+		Hostname    string      `json:"hostname,omitempty"`
+		IP          []string    `json:"ip,omitempty"`
+		Environment []string    `json:"environment,omitempty"`
+		Headers     http.Header `json:"headers,omitempty"`
+		URL         string      `json:"url,omitempty"`
+		Method      string      `json:"method,omitempty"`
+		Build       Build       `json:"build,omitempty"`
 	}{
 		hostname,
+		[]string{},
 		[]string{},
 		req.Header,
 		req.URL.RequestURI(),
 		req.Method,
+		Build{
+			Version: version,
+			Commit: commit,
+			BuildDate: buildDate,
+			BuildTime: buildTime,
+		},
 	}
 
 	ifaces, _ := net.Interfaces()
@@ -159,6 +173,12 @@ func api(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
+
+	environ := os.Environ()
+	for _, env := range environ {
+		data.Environment = append(data.Environment, env)
+ 	}
+
 	json.NewEncoder(w).Encode(data)
 }
 
