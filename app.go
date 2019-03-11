@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	// "github.com/pkg/profile"
 	"log"
 	"net"
@@ -17,11 +18,10 @@ import (
 	"time"
 )
 
-
 var (
-	port string
-	version  string
-	commit  string
+	port      string
+	version   string
+	commit    string
 	buildDate string
 	buildTime string
 )
@@ -114,12 +114,14 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 	environ := os.Environ()
 	for _, env := range environ {
 		fmt.Fprintln(w, "ENV:", env)
- 	}
+	}
 
 	fmt.Fprintln(w, "VERSION:", version)
 	fmt.Fprintln(w, "COMMIT:", commit)
 	fmt.Fprintln(w, "BUILD_DATE:", buildDate)
 	fmt.Fprintln(w, "BUILD_TIME:", buildTime)
+
+	fmt.Fprintln(w, "TIMESTAMP:", time.Now().Format(time.RFC3339Nano))
 
 	req.Write(w)
 }
@@ -127,10 +129,10 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 func api(w http.ResponseWriter, req *http.Request) {
 	hostname, _ := os.Hostname()
 	type Build struct {
-		Version      string     `json:"version,omitempty"`
-		Commit       string     `json:"commit,omitempty"`
-		BuildDate    string     `json:"build_date,omitempty"`
-		BuildTime    string     `json:"build_time,omitempty"`
+		Version   string `json:"version,omitempty"`
+		Commit    string `json:"commit,omitempty"`
+		BuildDate string `json:"build_date,omitempty"`
+		BuildTime string `json:"build_time,omitempty"`
 	}
 	data := struct {
 		Hostname    string      `json:"hostname,omitempty"`
@@ -148,8 +150,8 @@ func api(w http.ResponseWriter, req *http.Request) {
 		req.URL.RequestURI(),
 		req.Method,
 		Build{
-			Version: version,
-			Commit: commit,
+			Version:   version,
+			Commit:    commit,
 			BuildDate: buildDate,
 			BuildTime: buildTime,
 		},
@@ -177,7 +179,7 @@ func api(w http.ResponseWriter, req *http.Request) {
 	environ := os.Environ()
 	for _, env := range environ {
 		data.Environment = append(data.Environment, env)
- 	}
+	}
 
 	json.NewEncoder(w).Encode(data)
 }
