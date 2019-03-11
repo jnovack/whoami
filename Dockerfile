@@ -1,5 +1,5 @@
 # Create a minimal container to run a Golang static binary
-FROM golang:1.9.1
+FROM golang:1.12
 WORKDIR /go/src
 ADD . /go/src
 RUN go get -d
