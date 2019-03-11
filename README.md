@@ -1,6 +1,6 @@
 # whoami
 
-Tiny Go webserver that print HTTP request to output.
+Tiny Go webserver to print HTTP request vars to output.
 
 ```sh
 $ docker run -d -P --name whoami jnovack/whoami
