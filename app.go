@@ -19,11 +19,10 @@ import (
 )
 
 var (
-	port      string
-	version   string
-	commit    string
-	buildDate string
-	buildTime string
+	port         string
+	version      string
+	commit       string
+	buildRFC3339 string
 )
 
 func init() {
@@ -37,7 +36,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	fmt.Printf("jnovack/whoami %s\n", version)
-	fmt.Printf(" :: commit %s built on %s at %s ::\n", commit, buildDate, buildTime)
+	fmt.Printf(" :: commit %s built %s ::\n", commit, buildRFC3339)
 
 	// defer profile.Start().Stop()
 	flag.Parse()
@@ -118,8 +117,7 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Fprintln(w, "VERSION:", version)
 	fmt.Fprintln(w, "COMMIT:", commit)
-	fmt.Fprintln(w, "BUILD_DATE:", buildDate)
-	fmt.Fprintln(w, "BUILD_TIME:", buildTime)
+	fmt.Fprintln(w, "BUILD_RFC3339:", buildRFC3339)
 
 	fmt.Fprintln(w, "TIMESTAMP:", time.Now().Format(time.RFC3339Nano))
 
@@ -129,10 +127,9 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 func api(w http.ResponseWriter, req *http.Request) {
 	hostname, _ := os.Hostname()
 	type Build struct {
-		Version   string `json:"version,omitempty"`
-		Commit    string `json:"commit,omitempty"`
-		BuildDate string `json:"build_date,omitempty"`
-		BuildTime string `json:"build_time,omitempty"`
+		Version      string `json:"version,omitempty"`
+		Commit       string `json:"commit,omitempty"`
+		BuildRFC3339 string `json:"build_rfc3339,omitempty"`
 	}
 	data := struct {
 		Hostname    string      `json:"hostname,omitempty"`
@@ -150,10 +147,9 @@ func api(w http.ResponseWriter, req *http.Request) {
 		req.URL.RequestURI(),
 		req.Method,
 		Build{
-			Version:   version,
-			Commit:    commit,
-			BuildDate: buildDate,
-			BuildTime: buildTime,
+			Version:      version,
+			Commit:       commit,
+			BuildRFC3339: buildRFC3339,
 		},
 	}
 
