@@ -89,6 +89,10 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 	}
 
 	hostname, _ := os.Hostname()
+
+	req.Header.Add("Cache-Control", "must-validate")
+	req.Header.Add("Hostname", hostname)
+
 	fmt.Fprintln(w, "Hostname:", hostname)
 
 	ifaces, _ := net.Interfaces()
