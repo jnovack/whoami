@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	// "github.com/pkg/profile"
 	"log"
 	"net"
 	"net/http"
@@ -38,7 +37,6 @@ func main() {
 	fmt.Printf("jnovack/whoami %s\n", version)
 	fmt.Printf(" :: commit %s built %s ::\n", commit, buildRFC3339)
 
-	// defer profile.Start().Stop()
 	flag.Parse()
 	http.HandleFunc("/", whoami)
 	http.HandleFunc("/api", api)
