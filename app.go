@@ -123,6 +123,8 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Fprintln(w, "TIMESTAMP:", time.Now().Format(time.RFC3339Nano))
 
+	fmt.Fprintln(w, "PROTOCOL:", req.Proto)
+
 	req.Write(w)
 }
 
