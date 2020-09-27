@@ -34,8 +34,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	fmt.Printf("jnovack/whoami %s\n", version)
-	fmt.Printf(" :: commit %s built %s ::\n", commit, buildRFC3339)
+	fmt.Printf("jnovack/whoami %s :: commit %s built %s ::\n", version, commit, buildRFC3339)
 
 	flag.Parse()
 	http.HandleFunc("/", whoami)
@@ -117,8 +116,8 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "ENV:", env)
 	}
 
-	fmt.Fprintln(w, "VERSION:", version)
-	fmt.Fprintln(w, "COMMIT:", commit)
+	fmt.Fprintln(w, "BUILD_VERSION:", version)
+	fmt.Fprintln(w, "BUILD_COMMIT:", commit)
 	fmt.Fprintln(w, "BUILD_RFC3339:", buildRFC3339)
 
 	fmt.Fprintln(w, "TIMESTAMP:", time.Now().Format(time.RFC3339Nano))
