@@ -106,7 +106,7 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 				ip = v.IP
 			}
 			// No need to EVER print localhost, we know
-			if ip.String() != "127.0.0.1" {
+			if ip.String() != "127.0.0.1" && ip.String() != "::1" && ip.String() != "fe80::1" {
 				fmt.Fprintln(w, "IP:", ip)
 			}
 		}
