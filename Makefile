@@ -1,10 +1,15 @@
+include scripts/variables.mk
+
+# Only necessary for Go projects
+include scripts/go.mk
+
+.PHONY: build all
+.DEFAULT_GOAL := all
+
+all: build
+
+test:
+	# Make your own tests
 
 build:
-	docker build \
-		--build-arg VERSION=`git describe --tags --always` \
-		--build-arg COMMIT=`git rev-parse --short HEAD` \
-		--build-arg BUILD_RFC3339=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-		-t jnovack/whoami .
-
-run:
-	docker run -p 80 jnovack/whoami
+	# Make your own build statements
