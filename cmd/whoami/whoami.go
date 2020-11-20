@@ -9,6 +9,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	release "github.com/jnovack/release"
+
 	"log"
 	"net"
 	"net/http"
@@ -18,14 +20,11 @@ import (
 )
 
 var (
-	port         string
-	version      string
-	commit       string
-	buildRFC3339 string
+	port string
 )
 
 func init() {
-	flag.StringVar(&port, "port", "8000", "give me a port number")
+	flag.StringVar(&port, "port", "8000", "port number")
 }
 
 var upgrader = websocket.Upgrader{
@@ -34,7 +33,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	fmt.Printf("jnovack/whoami %s :: commit %s built %s ::\n", version, commit, buildRFC3339)
+	fmt.Println(release.Info())
 
 	flag.Parse()
 	http.HandleFunc("/", whoami)
@@ -90,7 +89,7 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 	req.Header.Add("Cache-Control", "must-validate")
 	req.Header.Add("Hostname", hostname)
 
-	fmt.Fprintln(w, "Hostname:", hostname)
+	// fmt.Fprintln(w, "Hostname:", hostname)
 
 	ifaces, _ := net.Interfaces()
 	for _, i := range ifaces {
@@ -116,9 +115,9 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "ENV:", env)
 	}
 
-	fmt.Fprintln(w, "BUILD_VERSION:", version)
-	fmt.Fprintln(w, "BUILD_COMMIT:", commit)
-	fmt.Fprintln(w, "BUILD_RFC3339:", buildRFC3339)
+	fmt.Fprintln(w, "BUILD_VERSION:", release.Version)
+	fmt.Fprintln(w, "BUILD_COMMIT:", release.Revision)
+	fmt.Fprintln(w, "BUILD_RFC3339:", release.BuildRFC3339)
 
 	fmt.Fprintln(w, "TIMESTAMP:", time.Now().Format(time.RFC3339Nano))
 
@@ -130,6 +129,8 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 func api(w http.ResponseWriter, req *http.Request) {
 	hostname, _ := os.Hostname()
 	type Build struct {
+		Application  string `json:"application,omitempty"`
+		GoVersion    string `json:"go_version,omitempty"`
 		Version      string `json:"version,omitempty"`
 		Commit       string `json:"commit,omitempty"`
 		BuildRFC3339 string `json:"build_rfc3339,omitempty"`
@@ -150,9 +151,11 @@ func api(w http.ResponseWriter, req *http.Request) {
 		req.URL.RequestURI(),
 		req.Method,
 		Build{
-			Version:      version,
-			Commit:       commit,
-			BuildRFC3339: buildRFC3339,
+			Application:  release.Application,
+			GoVersion:    release.GoVersion,
+			Version:      release.Version,
+			Commit:       release.Revision,
+			BuildRFC3339: release.BuildRFC3339,
 		},
 	}
 
