@@ -1,6 +1,7 @@
 #!/bin/bash
 # hooks/build
 # https://docs.docker.com/docker-cloud/builds/advanced/
+set -x
 
 ## requires to be an architecture+variant as defined by the manifest
 DEFAULT_ARCH="amd64"
@@ -10,6 +11,8 @@ echo "[***] Build hook starting..."
 
 # $(echo "index.docker.io/user/respository" | cut -d '/' -f 3) = "repository"
 APPLICATION=$(echo "${DOCKER_REPO}" | cut -d '/' -f 3)
+
+echo "[---] CURRENT WORKING DIRECTORY: $(pwd)"
 
 echo "[---] DOCKERFILE_PATH: ${DOCKERFILE_PATH}"
 echo "[---] DOCKER_REPO: ${DOCKER_REPO}"
@@ -31,10 +34,19 @@ DESCRIPTION=$(curl -s https://api.github.com/repos/${GITHUB_USERREPO} \
 echo "[---] GITHUB_USERREPO: ${GITHUB_USERREPO}"
 echo "[---] DESCRIPTION: ${DESCRIPTION}"
 
+BUILD_PATH=$(echo ${DOCKERFILE_PATH}| sed 's#/#..#g' | sed 's#[a-zA-Z0-9]\+#/#g' | cut -c 2- )
+echo "[---] BUILD_PATH: ${BUILD_PATH}."
+
 ## Build all variant images.
-for FILE in ${DOCKERFILE_PATH}.*
+for FILE in ./${DOCKERFILE_PATH}.*
 do
-    TARGET_ARCH=$(echo "${FILE}" | cut -d '.' -f 2)
+    if [ ! -f "${FILE}" ]; then
+        # Break if not actually a file.
+        break;
+    fi
+
+    echo "[---] Found additional file to build: ${FILE}"
+    TARGET_ARCH=$(echo "${FILE}" | cut -d '.' -f 3)
 
     ## FUDGE Factor because Docker Hub does not respect "32" in os/arch model
     case "$TARGET_ARCH" in
@@ -56,7 +68,7 @@ do
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
 
     docker build \
-        --file "${DOCKERFILE_PATH}.${TARGET_ARCH}" \
+        --file $(basename ${FILE}) \
         --build-arg APPLICATION=${APPLICATION} \
         --build-arg BUILD_RFC3339=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
         --build-arg REVISION=$(git rev-parse --short HEAD) \
@@ -64,13 +76,13 @@ do
         --build-arg DESCRIPTION="${DESCRIPTION}" \
         --build-arg VERSION=$(git describe --tags --always) \
         -t ${IMAGE_NAME}_${BUILD_ARCH} \
-        .
+        ${BUILD_PATH}.
 done
 
 
 ## Build the prime image at the end.
 docker build \
-    --file "${DOCKERFILE_PATH}" \
+    --file $(basename ${DOCKERFILE_PATH}) \
     --build-arg APPLICATION=${APPLICATION} \
     --build-arg BUILD_RFC3339=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
     --build-arg REVISION=$(git rev-parse --short HEAD) \
@@ -78,7 +90,7 @@ docker build \
     --build-arg DESCRIPTION="${DESCRIPTION}" \
     --build-arg VERSION=$(git describe --tags --always) \
     -t ${IMAGE_NAME}_${DEFAULT_ARCH} \
-    .
+    ${BUILD_PATH}.
 
 ## Push the default arch image so manifest-tool can find it
 docker push ${IMAGE_NAME}_${DEFAULT_ARCH}
