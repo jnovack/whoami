@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: set release date
         run: |
-          echo "RELEASE_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+          echo "RELEASE_DATE=$(date --rfc-3339=seconds | sed 's/ /T/g')" >> ${GITHUB_ENV}
 
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -45,10 +45,10 @@ jobs:
           file: ./build/package/Dockerfile
           push: true
           build-args: |
-              "APPLICATION=${{ github.repository.owner }}/${{ github.repository.name }}"
+              "APPLICATION=${{ github.repository }}"
               "BUILD_RFC3339=${{ env.RELEASE_DATE }}"
-              "DESCRIPTION="${{ github.repository.DESCRIPTION }}"
-              "PACKAGE=${{ github.repository.owner }}/${{ github.repository.name }}"
+              "DESCRIPTION="${{ github.event.repository.description }}"
+              "PACKAGE=${{ github.repository }}"
               "REVISION=${{ github.sha }}"
               "VERSION=${{ github.ref_name }}"
           tags: ${{ steps.meta.outputs.tags }}
