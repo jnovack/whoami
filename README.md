@@ -9,7 +9,7 @@ $ docker run -d -P --name whoami jnovack/whoami
 $ docker port whoami
 80/tcp -> 0.0.0.0:32769
 
-$ curl http://127.0.0.1:32769
+$ curl http://localhost:32769
 IP: 172.17.0.2
 ENV: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV: HOSTNAME=ce9538e7bfe2
@@ -20,7 +20,7 @@ BUILD_RFC3339: 2025-04-18T14:47:34+00:00
 TIMESTAMP: 2025-04-18T14:48:18.348892168Z
 PROTOCOL: HTTP/1.1
 GET / HTTP/1.1
-Host: localhost:8000
+Host: localhost:32769
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
 Accept-Encoding: gzip, deflate, br, zstd

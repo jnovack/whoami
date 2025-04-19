@@ -3,8 +3,8 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -17,8 +17,13 @@ jobs:
       attestations: write
       id-token: write
     steps:
+      - name: set release date
+        run: |
+          echo "RELEASE_DATE=$(date --rfc-3339=seconds | sed 's/ /T/g')" >> ${GITHUB_ENV}
+
       - name: Check out the repo
         uses: actions/checkout@v4
+
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -28,9 +33,23 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ vars.ORGANIZATION }}/${{ vars.REPOSITORY }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{version}}
+
+      # Needed for multi-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # Needed for multi-platform builds
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and push Docker image
         id: push
@@ -39,12 +58,13 @@ jobs:
           context: .
           file: ./build/package/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+              "APPLICATION=${{ github.event.repository.name }}"
+              "BUILD_RFC3339=${{ env.RELEASE_DATE }}"
+              DESCRIPTION="${{ github.event.repository.description }}"
+              "PACKAGE=${{ github.repository }}"
+              "REVISION=${{ github.sha }}"
+              "VERSION=${{ github.ref_name }}"
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: index.docker.io/${{ vars.ORGANIZATION }}/${{ vars.REPOSITORY }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
