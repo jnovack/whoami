@@ -17,8 +17,13 @@ jobs:
       attestations: write
       id-token: write
     steps:
+      - name: set release date
+        run: |
+          echo "RELEASE_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+
       - name: Check out the repo
         uses: actions/checkout@v4
+
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -39,6 +44,13 @@ jobs:
           context: .
           file: ./build/package/Dockerfile
           push: true
+          build-args: |
+              "APPLICATION=${{ github.repository.owner }}/${{ github.repository.name }}"
+              "BUILD_RFC3339=${{ env.RELEASE_DATE }}"
+              "DESCRIPTION="${{ github.repository.DESCRIPTION }}"
+              "PACKAGE=${{ github.repository.owner }}/${{ github.repository.name }}"
+              "REVISION=${{ github.sha }}"
+              "VERSION=${{ github.ref_name }}"
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
