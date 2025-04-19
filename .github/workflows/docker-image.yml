@@ -45,7 +45,7 @@ jobs:
           file: ./build/package/Dockerfile
           push: true
           build-args: |
-              "APPLICATION=${{ github.repository }}"
+              "APPLICATION=${{ github.event.repository.name }}"
               "BUILD_RFC3339=${{ env.RELEASE_DATE }}"
               DESCRIPTION="${{ github.event.repository.description }}"
               "PACKAGE=${{ github.repository }}"
