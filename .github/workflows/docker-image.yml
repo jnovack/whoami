@@ -33,9 +33,14 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ vars.ORGANIZATION }}/${{ vars.REPOSITORY }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{version}}
 
       - name: Build and push Docker image
         id: push
@@ -44,6 +49,7 @@ jobs:
           context: .
           file: ./build/package/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           build-args: |
               "APPLICATION=${{ github.event.repository.name }}"
               "BUILD_RFC3339=${{ env.RELEASE_DATE }}"
