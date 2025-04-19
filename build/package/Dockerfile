@@ -1,5 +1,5 @@
 # Create a minimal container to run a Golang static binary
-FROM golang:1.15-alpine as build
+FROM golang:1.24-alpine as build
 WORKDIR /go/src/app
 
 # Create appuser.
@@ -66,3 +66,4 @@ COPY --from=build /go/bin/${APPLICATION} /app
 EXPOSE 8000
 
 ENTRYPOINT ["/app"]
+
