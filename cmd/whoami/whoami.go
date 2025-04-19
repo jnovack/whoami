@@ -27,19 +27,13 @@ func init() {
 	flag.StringVar(&port, "port", "8000", "port number")
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
 func main() {
 	fmt.Println(release.Info())
 
 	flag.Parse()
 	http.HandleFunc("/", whoami)
 	http.HandleFunc("/api", api)
-	http.HandleFunc("/echo", echoHandler)
-	http.HandleFunc("/health", healthHandler)
+	http.HandleFunc("/healthcheck", healthHandler)
 	http.Handle("/metrics", promhttp.Handler())
 	fmt.Println(" - listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
@@ -51,25 +45,6 @@ func printBinary(s []byte) {
 		fmt.Printf("%d,", s[n])
 	}
 	fmt.Printf("\n")
-}
-
-func echoHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			return
-		}
-		printBinary(p)
-		err = conn.WriteMessage(messageType, p)
-		if err != nil {
-			return
-		}
-	}
 }
 
 func whoami(w http.ResponseWriter, req *http.Request) {
