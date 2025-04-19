@@ -1,5 +1,5 @@
 # Create a minimal container to run a Golang static binary
-FROM golang:1.24-alpine as build
+FROM golang:1.24-alpine AS build
 WORKDIR /go/src/app
 
 # Create appuser.
@@ -23,6 +23,7 @@ RUN go mod download
 
 ARG APPLICATION="go-executable"
 ARG BUILD_RFC3339="1970-01-01T00:00:00Z"
+ARG PACKAGE="user/repo"
 ARG REVISION="local"
 ARG VERSION="dirty"
 ARG GO_LDFLAGS="-w -s \
@@ -45,9 +46,9 @@ USER appuser:appuser
 
 ARG APPLICATION="go-executable"
 ARG BUILD_RFC3339="1970-01-01T00:00:00Z"
-ARG REVISION="local"
 ARG DESCRIPTION="no description"
 ARG PACKAGE="user/repo"
+ARG REVISION="local"
 ARG VERSION="dirty"
 
 LABEL org.opencontainers.image.ref.name="${PACKAGE}" \
@@ -66,4 +67,3 @@ COPY --from=build /go/bin/${APPLICATION} /app
 EXPOSE 8000
 
 ENTRYPOINT ["/app"]
-
