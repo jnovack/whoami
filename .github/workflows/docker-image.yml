@@ -47,7 +47,7 @@ jobs:
           build-args: |
               "APPLICATION=${{ github.repository }}"
               "BUILD_RFC3339=${{ env.RELEASE_DATE }}"
-              "DESCRIPTION="${{ github.event.repository.description }}"
+              "DESCRIPTION=\"${{ github.event.repository.description }}\""
               "PACKAGE=${{ github.repository }}"
               "REVISION=${{ github.sha }}"
               "VERSION=${{ github.ref_name }}"
