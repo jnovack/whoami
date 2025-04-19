@@ -64,6 +64,6 @@ LABEL org.opencontainers.image.ref.name="${PACKAGE}" \
 
 COPY --from=build /go/bin/${APPLICATION} /app
 
-EXPOSE 8000
+EXPOSE 80
 
 ENTRYPOINT ["/app"]
