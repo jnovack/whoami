@@ -2,6 +2,8 @@
 
 Tiny Go webserver to print HTTP request vars to output.
 
+![whoami logo](docs/logo.svg)
+
 ```sh
 $ docker run -d -P --name whoami jnovack/whoami
 49e9ee7948300c7f310ab9f6e405c658f8433cc418e6f94e36e1171524209ed8
