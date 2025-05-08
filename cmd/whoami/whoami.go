@@ -38,14 +38,6 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-func printBinary(s []byte) {
-	fmt.Printf("Received b:")
-	for n := 0; n < len(s); n++ {
-		fmt.Printf("%d,", s[n])
-	}
-	fmt.Printf("\n")
-}
-
 func whoami(w http.ResponseWriter, req *http.Request) {
 	u, _ := url.Parse(req.URL.String())
 	queryParams := u.Query()
@@ -62,8 +54,6 @@ func whoami(w http.ResponseWriter, req *http.Request) {
 
 	req.Header.Add("Cache-Control", "must-validate")
 	req.Header.Add("Hostname", hostname)
-
-	// fmt.Fprintln(w, "Hostname:", hostname)
 
 	ifaces, _ := net.Interfaces()
 	for _, i := range ifaces {
@@ -153,9 +143,7 @@ func api(w http.ResponseWriter, req *http.Request) {
 	}
 
 	environ := os.Environ()
-	for _, env := range environ {
-		data.Environment = append(data.Environment, env)
-	}
+	data.Environment = append(data.Environment, environ...)
 
 	json.NewEncoder(w).Encode(data)
 }
